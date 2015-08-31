@@ -20,7 +20,7 @@
  *
  *  @return The number of slices in chart view.
  */
-- (NSInteger)numberOfSlicesInDoughnutChart:(XYDoughnutChart * __nonnull)doughnutChart;
+- (NSUInteger)numberOfSlicesInDoughnutChart:(XYDoughnutChart * __nonnull)doughnutChart;
 
 /**
  *  Asks the data source to return the value of the specified slice in the chart view.
