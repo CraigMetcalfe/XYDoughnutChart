@@ -14,13 +14,13 @@
  *
  *  @return An `NSIndexPath` object or nil if the object could not be created.
  */
-+ (NSIndexPath *)indexPathForSlice:(NSInteger)slice;
++ (NSIndexPath *)indexPathForSlice:(NSUInteger)slice;
 
 /** @name Getting the Index of a Row or Item */
 
 /**
 *  An index number identifying a slice in a section of a doughnut chart view. (read-only)
 */
-@property (readonly) NSInteger slice;
+@property (readonly) NSUInteger slice;
 
 @end

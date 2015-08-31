@@ -1,11 +1,11 @@
 #import <objc/runtime.h>
 #import "NSIndexPath+XYDoughnutChart.h"
 
-static void *NSIndexPathXYDouchnutChartSliceKey;
+static void *NSIndexPathXYDoughnutChartSliceKey;
 
 @implementation NSIndexPath (XYDoughnutChart)
 
-+ (NSIndexPath *)indexPathForSlice:(NSInteger)slice
++ (NSIndexPath *)indexPathForSlice:(NSUInteger)slice
 {
     NSIndexPath *index = [[NSIndexPath alloc] init];
     index.slice = slice;
@@ -13,11 +13,11 @@ static void *NSIndexPathXYDouchnutChartSliceKey;
 }
 
 - (void)setSlice:(NSInteger)slice {
-    objc_setAssociatedObject(self, &NSIndexPathXYDouchnutChartSliceKey, [NSNumber numberWithInteger:slice], OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    objc_setAssociatedObject(self, &NSIndexPathXYDoughnutChartSliceKey, @(slice), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
-- (NSInteger)slice {
-    return [(NSNumber *)objc_getAssociatedObject(self, &NSIndexPathXYDouchnutChartSliceKey) integerValue];
+- (NSUInteger)slice {
+    return [(NSNumber *)objc_getAssociatedObject(self, &NSIndexPathXYDoughnutChartSliceKey) unsignedIntegerValue];
 }
 
 @end

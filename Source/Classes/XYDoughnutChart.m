@@ -97,17 +97,17 @@ static CGPathRef CGPathCreateArc(CGPoint center, CGFloat radius, CGFloat radiusO
     CGMutablePathRef path = CGPathCreateMutable();
 
     CGPathMoveToPoint(path, NULL,
-                      center.x + radius * radiusOffset * cos(startAngle),
-                      center.y + radius * radiusOffset * sin(startAngle));
+                      center.x + radius * radiusOffset * cosf(startAngle),
+                      center.y + radius * radiusOffset * sinf(startAngle));
     CGPathAddLineToPoint(path, NULL,
-                         center.x + radius * cos(startAngle),
-                         center.y + radius * sin(startAngle));
+                         center.x + radius * cosf(startAngle),
+                         center.y + radius * sinf(startAngle));
     CGPathAddArc(path, NULL,
                  center.x, center.y, radius,
                  startAngle, endAngle, false);
     CGPathAddLineToPoint(path, NULL,
-                         center.x + radius * radiusOffset * cos(endAngle),
-                         center.y + radius * radiusOffset * sin(endAngle));
+                         center.x + radius * radiusOffset * cosf(endAngle),
+                         center.y + radius * radiusOffset * sinf(endAngle));
     CGPathAddArc(path, NULL, center.x, center.y, radius * radiusOffset, endAngle, startAngle, true);
 
     CGPathCloseSubpath(path);
@@ -142,8 +142,8 @@ static CGPathRef CGPathCreateArc(CGPoint center, CGFloat radius, CGFloat radiusO
     _selectedIndexPath = nil;
 
     _animationDuration = 0.5f;
-    _startDoughnutAngle = M_PI_2 * 3;
-    _radiusOffset = 1.0 / 3.0;
+    _startDoughnutAngle = (CGFloat) M_PI_2 * 3.0f;
+    _radiusOffset = 1.0f / 3.0f;
 
     self.doughnutRadius = MIN(self.frame.size.width/2, self.frame.size.height/2) - 10;
     self.doughnutCenter = CGPointMake(self.frame.size.width/2, self.frame.size.height/2);
@@ -214,13 +214,13 @@ static CGPathRef CGPathCreateArc(CGPoint center, CGFloat radius, CGFloat radiusO
 
     double sum = 0.0;
     double values[sliceCount];
-    for (int index = 0; index < sliceCount; index++) {
+    for (NSUInteger index = 0; index < sliceCount; index++) {
         values[index] = [_dataSource doughnutChart:self valueForSliceAtIndexPath:[NSIndexPath indexPathForSlice:index]];
         sum += values[index];
     }
 
     double angles[sliceCount], div;
-    for (int index = 0; index < sliceCount; index++) {
+    for (NSUInteger index = 0; index < sliceCount; index++) {
         div = sum == 0? 0 : values[index] / sum;
         angles[index] = M_PI * 2 * div;
     }
@@ -244,12 +244,12 @@ static CGPathRef CGPathCreateArc(CGPoint center, CGFloat radius, CGFloat radiusO
             layer.value = 0.0;
             if (animated) {
                 [layer createArcAnimationForKey:@"startAngle"
-                                      fromValue:[NSNumber numberWithDouble:_startDoughnutAngle]
-                                        toValue:[NSNumber numberWithDouble:_startDoughnutAngle]
+                                      fromValue:@(_startDoughnutAngle)
+                                        toValue:@(_startDoughnutAngle)
                                        Delegate:self];
                 [layer createArcAnimationForKey:@"endAngle"
-                                      fromValue:[NSNumber numberWithDouble:_startDoughnutAngle]
-                                        toValue:[NSNumber numberWithDouble:_startDoughnutAngle]
+                                      fromValue:@(_startDoughnutAngle)
+                                        toValue:@(_startDoughnutAngle)
                                        Delegate:self];
             } else {
                 layer.startAngle = _startDoughnutAngle;
@@ -268,7 +268,7 @@ static CGPathRef CGPathCreateArc(CGPoint center, CGFloat radius, CGFloat radiusO
         return;
     }
 
-    for(int index = 0; index < sliceCount; index ++) {
+    for(NSUInteger index = 0; index < sliceCount; index ++) {
         SliceLayer *layer;
         double angle = angles[index];
         endToAngle += angle;
@@ -284,9 +284,9 @@ static CGPathRef CGPathCreateArc(CGPoint center, CGFloat radius, CGFloat radiusO
             [parentLayer addSublayer:layer];
             diff--;
         } else {
-            SliceLayer *onelayer = [slicelayers objectAtIndex:index];
-            if(diff == 0 || onelayer.value == (CGFloat)values[index]) {
-                layer = onelayer;
+            SliceLayer *oneLayer = slicelayers[index];
+            if(diff == 0 || oneLayer.value == (CGFloat)values[index]) {
+                layer = oneLayer;
                 [layersToRemove removeObject:layer];
             }
             else if(diff > 0) {
@@ -297,12 +297,12 @@ static CGPathRef CGPathCreateArc(CGPoint center, CGFloat radius, CGFloat radiusO
             }
             else if(diff < 0) {
                 while(diff < 0) {
-                    [onelayer removeFromSuperlayer];
-                    [parentLayer addSublayer:onelayer];
+                    [oneLayer removeFromSuperlayer];
+                    [parentLayer addSublayer:oneLayer];
                     diff++;
-                    onelayer = [slicelayers objectAtIndex:index];
-                    if (onelayer.value == (CGFloat)values[index] || diff == 0) {
-                        layer = onelayer;
+                    oneLayer = slicelayers[index];
+                    if (oneLayer.value == (CGFloat)values[index] || diff == 0) {
+                        layer = oneLayer;
                         [layersToRemove removeObject:layer];
                         break;
                     }
@@ -310,8 +310,8 @@ static CGPathRef CGPathCreateArc(CGPoint center, CGFloat radius, CGFloat radiusO
             }
         }
 
-        layer.value = values[index];
-        layer.percentage = sum ? layer.value / sum : 0;
+        layer.value = (CGFloat) values[index];
+        layer.percentage = (CGFloat) (sum ? layer.value / sum : 0.0f);
         layer.fillColor = [self sliceColorAtIndex:index].CGColor;
 
         if ([_dataSource respondsToSelector:@selector(doughnutChart:textForSliceAtIndexPath:)]) {
@@ -320,12 +320,12 @@ static CGPathRef CGPathCreateArc(CGPoint center, CGFloat radius, CGFloat radiusO
 
         if (animated) {
             [layer createArcAnimationForKey:@"startAngle"
-                                  fromValue:[NSNumber numberWithDouble:startFromAngle]
-                                    toValue:[NSNumber numberWithDouble:startToAngle+_startDoughnutAngle]
+                                  fromValue:@(startFromAngle)
+                                    toValue:@(startToAngle + _startDoughnutAngle)
                                    Delegate:self];
             [layer createArcAnimationForKey:@"endAngle"
-                                  fromValue:[NSNumber numberWithDouble:endFromAngle]
-                                    toValue:[NSNumber numberWithDouble:endToAngle+_startDoughnutAngle]
+                                  fromValue:@(endFromAngle)
+                                    toValue:@(endToAngle + _startDoughnutAngle)
                                    Delegate:self];
         } else {
             [self updateLabelForLayer:layer];
@@ -344,7 +344,7 @@ static CGPathRef CGPathCreateArc(CGPoint center, CGFloat radius, CGFloat radiusO
         layer.fillColor = [self backgroundColor].CGColor;
         layer.delegate = nil;
         layer.zPosition = 0;
-        SliceTextLayer *textLayer = [[layer sublayers] objectAtIndex:0];
+        SliceTextLayer *textLayer = [layer sublayers][0];
         textLayer.hidden = YES;
     }
 
@@ -420,8 +420,7 @@ static CGPathRef CGPathCreateArc(CGPoint center, CGFloat radius, CGFloat radiusO
     if (!newIndexPath) {
         return [self touchesEnded:touches withEvent:event];
     }
-
-    if (newIndexPath) {
+    else {
         [self delegateOfSelectionChangeFrom:_selectedIndexPath to:newIndexPath];
     }
 }
@@ -499,17 +498,17 @@ static CGPathRef CGPathCreateArc(CGPoint center, CGFloat radius, CGFloat radiusO
 
 # pragma mark - Selection Programmatically Without Notification
 
-- (void)setSliceSelectedAtIndex:(NSInteger)index
+- (void)setSliceSelectedAtIndex:(NSUInteger)index
 {
-    SliceLayer *layer = [_doughnutView.layer.sublayers objectAtIndex:index];
+    SliceLayer *layer = _doughnutView.layer.sublayers[index];
     if (layer && !layer.selected) {
         layer.selected = YES;
     }
 }
 
-- (void)setSliceDeselectedAtIndex:(NSInteger)index
+- (void)setSliceDeselectedAtIndex:(NSUInteger)index
 {
-    SliceLayer *layer = [_doughnutView.layer.sublayers objectAtIndex:index];
+    SliceLayer *layer = _doughnutView.layer.sublayers[index];
     if (layer && layer.selected) {
         layer.selected = NO;
     }
@@ -548,7 +547,7 @@ static CGPathRef CGPathCreateArc(CGPoint center, CGFloat radius, CGFloat radiusO
     CGSize size = [@"0" sizeWithAttributes:@{NSFontAttributeName: self.labelFont}];
     [CATransaction setDisableActions:YES];
     textLayer.frame = CGRectMake(0, 0, size.width, size.height);
-    textLayer.position = CGPointMake(_doughnutCenter.x + (_labelRadius * cos(0)), _doughnutCenter.y + (_labelRadius * sin(0)));
+    textLayer.position = CGPointMake(_doughnutCenter.x + (_labelRadius * cosf(0)), _doughnutCenter.y + (_labelRadius * sinf(0)));
     [CATransaction setDisableActions:NO];
     [sliceLayer addSublayer:textLayer];
     return sliceLayer;
@@ -567,13 +566,13 @@ static CGPathRef CGPathCreateArc(CGPoint center, CGFloat radius, CGFloat radiusO
         if (animated) {
             presentationLayerStartAngle = [[sliceLayer presentationLayer] valueForKey:@"startAngle"];
         }
-        CGFloat interpolatedStartAngle = [presentationLayerStartAngle doubleValue];
+        CGFloat interpolatedStartAngle = [presentationLayerStartAngle floatValue];
 
         NSNumber *presentationLayerEndAngle = [sliceLayer valueForKey:@"endAngle"];
         if (animated) {
             presentationLayerEndAngle = [[sliceLayer presentationLayer] valueForKey:@"endAngle"];
         }
-        CGFloat interpolatedEndAngle = [presentationLayerEndAngle doubleValue];
+        CGFloat interpolatedEndAngle = [presentationLayerEndAngle floatValue];
 
         CGPathRef path = CGPathCreateArc(_doughnutCenter, _doughnutRadius, _radiusOffset,
                                          interpolatedStartAngle, interpolatedEndAngle);
@@ -582,7 +581,7 @@ static CGPathRef CGPathCreateArc(CGPoint center, CGFloat radius, CGFloat radiusO
         CFRelease(path);
 
         {
-            SliceTextLayer *labelLayer = [[sliceLayer sublayers] objectAtIndex:0];
+            SliceTextLayer *labelLayer = [sliceLayer sublayers][0];
             CGFloat interpolatedMidAngle = (interpolatedEndAngle + interpolatedStartAngle) / 2;
 
             if (interpolatedEndAngle == interpolatedStartAngle) {
@@ -593,17 +592,17 @@ static CGPathRef CGPathCreateArc(CGPoint center, CGFloat radius, CGFloat radiusO
             if (_showLabel) {
                 labelLayer.hidden = NO;
 
-                labelLayer.position = CGPointMake(_doughnutCenter.x + (_labelRadius * cos(interpolatedMidAngle)),
-                                                  _doughnutCenter.y + (_labelRadius * sin(interpolatedMidAngle)));
+                labelLayer.position = CGPointMake(_doughnutCenter.x + (_labelRadius * cosf(interpolatedMidAngle)),
+                                                  _doughnutCenter.y + (_labelRadius * sinf(interpolatedMidAngle)));
 
                 NSString *valueText = [labelLayer valueAtSliceLayer:sliceLayer byPercentage:_showPercentage];
 
                 CGSize size = [valueText sizeWithAttributes:@{NSFontAttributeName: self.labelFont}];
                 labelLayer.bounds = CGRectMake(0, 0, size.width, size.height);
-                CGFloat labelLayerWidth = fabs(_labelRadius * cos(interpolatedStartAngle)
-                                              - _labelRadius * cos(interpolatedEndAngle));
-                CGFloat labelLayerHeight = fabs(_labelRadius * sin(interpolatedStartAngle)
-                                          - _labelRadius * sin(interpolatedEndAngle));
+                CGFloat labelLayerWidth = fabsf(_labelRadius * cosf(interpolatedStartAngle)
+                                              - _labelRadius * cosf(interpolatedEndAngle));
+                CGFloat labelLayerHeight = fabsf(_labelRadius * sinf(interpolatedStartAngle)
+                                          - _labelRadius * sinf(interpolatedEndAngle));
                 if (MAX(labelLayerWidth, labelLayerHeight) < MAX(size.width,size.height) || sliceLayer.value <= 0) {
                     labelLayer.string = @"";
                 } else {
@@ -650,7 +649,7 @@ static CGPathRef CGPathCreateArc(CGPoint center, CGFloat radius, CGFloat radiusO
 
 - (void)updateLabelForLayer:(SliceLayer *)sliceLayer
 {
-    SliceTextLayer *labelLayer = [[sliceLayer sublayers] objectAtIndex:0];
+    SliceTextLayer *labelLayer = [sliceLayer sublayers][0];
 
     labelLayer.hidden = !_showLabel;
 
@@ -673,12 +672,12 @@ static CGPathRef CGPathCreateArc(CGPoint center, CGFloat radius, CGFloat radiusO
     [CATransaction setDisableActions:NO];
 }
 
-- (UIColor *)sliceColorAtIndex:(NSInteger)index
+- (UIColor *)sliceColorAtIndex:(NSUInteger)index
 {
     if ([_delegate respondsToSelector:@selector(doughnutChart:colorForSliceAtIndexPath:)]) {
         return [_delegate doughnutChart:self colorForSliceAtIndexPath:[NSIndexPath indexPathForSlice:index]];
     }
-    return [UIColor colorWithHue:((index/8)%20)/20.0+0.02 saturation:(index%8+3)/10.0 brightness:91/100.0 alpha:1];
+    return [UIColor colorWithHue:((index/8)%20)/20.0f+0.02f saturation:(index%8+3)/10.0f brightness:91.0f/100.0f alpha:1];
 }
 
 @end
