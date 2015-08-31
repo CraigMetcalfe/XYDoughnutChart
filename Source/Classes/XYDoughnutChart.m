@@ -58,7 +58,7 @@
     CGFloat value = sliceLayer.value;
     NSString *label;
     if (byPercentage) {
-        label = [NSString stringWithFormat:@"%0.0f", sliceLayer.percentage*100];
+        label = [NSString stringWithFormat:@"%0.1f %%", sliceLayer.percentage*100];
     } else {
         label = (sliceLayer.text) ? sliceLayer.text : [NSString stringWithFormat:@"%0.0f", value];
     }

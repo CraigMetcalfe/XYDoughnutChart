@@ -132,58 +132,58 @@
 /**
  *  The object that acts as the data source of the receiving doughnut chart view.
  */
-@property(nonatomic, weak, nullable) id<XYDoughnutChartDataSource> dataSource;
+@property (nonatomic, weak, nullable) id<XYDoughnutChartDataSource> dataSource;
 
 /**
  *  The object that acts as the delegate of the receiving doughnut chart view.
  */
-@property(nonatomic, weak, nullable) id<XYDoughnutChartDelegate> delegate;
+@property (nonatomic, weak, nullable) id<XYDoughnutChartDelegate> delegate;
 
 /** @name Animating slices */
 
 /**
  *  The amount of time it takes to go through one cycle of the slices. The default value is `0.5`.
  */
-@property(nonatomic, assign) NSTimeInterval animationDuration;
+@property (nonatomic, assign) NSTimeInterval animationDuration;
 
 /**
  *  The start angle where animation starts. The default value is `M_PI_2 * 3`.
  */
-@property(nonatomic, assign) CGFloat startDoughnutAngle;
+@property (nonatomic, assign) CGFloat startDoughnutAngle;
 
 /**
  *  The doughnut center radius ratio. `0.0` draws chart as pie chart and `0.9` draws thin doughnut chart.
  *  The default value is `1.0 / 3.0`.
  */
-@property(nonatomic, assign) CGFloat radiusOffset;
+@property (nonatomic, assign) CGFloat radiusOffset;
 
 /** @name Setting and Getting Label Attributes */
 
 /**
  *  Font for the slice label. The default font is System bold.
  */
-@property(nonatomic, strong, nullable) UIFont  *labelFont;
+@property (nonatomic, strong, nullable) UIFont  *labelFont;
 
 /**
  * Color for the slice label. The default color is white color.
  */
-@property(nonatomic, strong, nullable) UIColor *labelColor;
+@property (nonatomic, strong, nullable) UIColor *labelColor;
 
 /**
  *  Color for the shadow of slice label. The default color is clear color.
  */
-@property(nonatomic, strong, nullable) UIColor *labelShadowColor;
+@property (nonatomic, strong, nullable) UIColor *labelShadowColor;
 
 /**
  *  `YES` shows the labels in each slices. `NO` does not shows. The default is `YES`.
  */
-@property(nonatomic, assign) BOOL    showLabel;
+@property (nonatomic, assign) BOOL    showLabel;
 
 /**
  *  `YES` displays chart label as a percentage of the slices. `NO` displays the value of the slice.
  *   The default value is `YES`.
  */
-@property(nonatomic, assign) BOOL    showPercentage;
+@property (nonatomic, assign) BOOL    showPercentage;
 
 /**
  *  Reloads chart view **without** animation. See also reloadData:.
